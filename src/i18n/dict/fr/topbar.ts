@@ -1,0 +1,20 @@
+// Dictionnaire FR (fragmentation par domaine, clé = texte chinois d’origine). Les fichiers de données sont exemptés de la limite de lignes.
+export default {
+  '切换界面语言': 'Changer la langue de l’interface',
+  '返回工程列表': 'Retour aux projets',
+  '双击重命名': 'Double-cliquer pour renommer',
+  '编辑快捷键': 'Modifier les raccourcis clavier',
+  '撤销': 'Annuler',
+  '重做': 'Rétablir',
+  '设计风格(品牌)': 'Style graphique (marque)',
+  '历史版本': 'Historique des versions',
+  '切换面板布局': 'Changer la disposition des panneaux',
+  '导出 MP4': 'Exporter en MP4',
+  '导出中…': 'Export en cours…',
+  '导出': 'Exporter',
+  '账户': 'Compte',
+  '窗口控制': 'Contrôles de la fenêtre',
+  '关闭窗口': 'Fermer la fenêtre',
+  '最小化窗口': 'Réduire la fenêtre',
+  '缩放窗口': 'Agrandir la fenêtre',
+} as Record<string, string>;

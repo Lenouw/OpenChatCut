@@ -23,7 +23,8 @@ function useCreatedSession(setError: SetError): [MobileUploadSession | null, Set
   useEffect(() => {
     let active = true;
     let createdId: string | null = null;
-    void createMobileUploadSession(getLocale()).then((created) => {
+    // La page d’upload mobile n’existe qu’en zh/en côté serveur : le français retombe sur l’anglais.
+    void createMobileUploadSession(getLocale() === 'zh' ? 'zh' : 'en').then((created) => {
       createdId = created.id;
       if (!active) { void closeMobileUploadSession(created.id).catch(() => undefined); return; }
       setSession(created);

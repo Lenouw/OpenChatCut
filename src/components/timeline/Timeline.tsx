@@ -138,7 +138,7 @@ The playhead line/triangle is pointerEvents:none, click it to click the ruler - 
             const kindLabel = meta.kind === 'video' ? '视频' : meta.kind === 'audio' ? '音乐' : '字幕';
             // Stable title (类型+序号) plus optional custom name as a second row,
             // so track naming never drifts when AI creates tracks with its own labels.
-            const titleName = locale === 'en' ? alias : `${t(kindLabel)}${alias.slice(1)}`;
+            const titleName = locale === 'zh' ? `${t(kindLabel)}${alias.slice(1)}` : alias;
             const customName = config.name || undefined;
             const deletePlan = trackDeletePlan(state, trackId);
             return (
