@@ -256,4 +256,10 @@ export default {
   '重新链接文件失败': 'Impossible de relier les fichiers',
   '链接所选音视频': 'Associer l’audio et la vidéo sélectionnés',
   '闭合缝隙': 'Combler les vides',
+  '转场菜单': 'Menu de la transition',
+  '{n} 秒': '{n} s',
+  '居中于切点': 'Centrer sur la coupe',
+  '结束于切点': 'Finir à la coupe',
+  '开始于切点': 'Commencer à la coupe',
+  '删除转场': 'Supprimer la transition',
 } as Record<string, string>;
