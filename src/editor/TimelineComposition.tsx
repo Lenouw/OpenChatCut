@@ -12,6 +12,7 @@ import { sourceFrameAt } from './sourceLimit';
 import { nestedSequenceFrom, resolveTimelineRenderPlan, SequenceGraphError, type SequenceGraphLimits } from './sequenceGraph';
 import { PreviewTransitionIn } from './transitionPreview.tsx';
 import { previewTransitionType } from './transitionPreview';
+import { framesBeforeCut, transitionStartFrame } from './transitionSpan';
 import { TimelineReadinessGate } from './TimelineReadinessGate';
 import { timelineReadinessKey } from './timelineReadinessKey';
 import { isBackgroundFillActive } from './backgroundFill';
@@ -184,11 +185,11 @@ function TimelineContent({ state, project, transparent, browserRenderer = false,
     : null;
   if (selectedEffectStaticStatus) staticPreviewStatuses.push(selectedEffectStaticStatus);
   for (const t of visualTransitions) {
-    const half = Math.floor(t.durationInFrames / 2);
+    const before = framesBeforeCut(t);
     const out = byId.get(t.outgoingItemId);
     const inc = byId.get(t.incomingItemId);
-    extendBefore.set(t.incomingItemId, half);
-    extendAfter.set(t.outgoingItemId, t.durationInFrames - half);
+    extendBefore.set(t.incomingItemId, before);
+    extendAfter.set(t.outgoingItemId, t.durationInFrames - before);
     const selected = environment.isPlayer && t.incomingItemId === selectedItemId;
     const adapter = selectTransitionPreviewAdapter({
       mode: environment.isPlayer ? 'player' : 'render',
@@ -198,7 +199,7 @@ function TimelineContent({ state, project, transparent, browserRenderer = false,
       hasShader: t.type !== 'custom-shader' || !!t.customFrag,
     });
     if (adapter.adapter === 'gl-transition') {
-      const from = inc!.startFrame - half; // R = incoming.from - floor(L/2)
+      const from = transitionStartFrame(t, inc!.startFrame);
       const fallbackType = previewTransitionType(t.type);
       entranceOf.set(t.incomingItemId, {
         type: fallbackType,

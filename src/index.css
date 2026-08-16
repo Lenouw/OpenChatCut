@@ -1113,6 +1113,34 @@ button, input, select { font: inherit; }
 .cc-clip-badge.iso { background:#1a6b4aee; border-color:#5dcaa0; }
 .cc-clip-badge.tr { background:#3a3f52ee; border-color:#8a9ad0; }
 
+/* transition drawn as its span across the cut, with the marker sitting on the cut */
+.cc-transition-region {
+  position:absolute; top:0; height:100%; z-index:3;
+  border-radius:3px; cursor:grab;
+  background:rgba(var(--cc-accent-rgb), 0.16);
+  border:0.5px solid rgba(var(--cc-accent-rgb), 0.45);
+}
+.cc-transition-region:hover { background:rgba(var(--cc-accent-rgb), 0.24); }
+.cc-transition-region.dragging { cursor:grabbing; background:rgba(var(--cc-accent-rgb), 0.3); }
+.cc-transition-region.locked { cursor:default; opacity:0.6; }
+.cc-transition-region-handle {
+  position:absolute; top:0; height:100%; cursor:ew-resize;
+  background:rgba(var(--cc-accent-rgb), 0.45);
+}
+.cc-transition-region-handle:hover { background:rgba(var(--cc-accent-rgb), 0.75); }
+.cc-transition-region.locked .cc-transition-region-handle { cursor:default; }
+.cc-transition-region .cc-transition-marker {
+  position:absolute; top:50%; transform:translate(-50%, -50%); pointer-events:none;
+}
+/* length and before/after split, shown only while a drag is in flight */
+.cc-transition-region-readout {
+  position:absolute; left:50%; bottom:100%; transform:translateX(-50%);
+  margin-bottom:4px; padding:2px 6px; border-radius:3px;
+  font-size:10px; line-height:1.4; white-space:nowrap; pointer-events:none;
+  color:var(--cc-text); background:var(--cc-panel-alt);
+  border:0.5px solid var(--cc-border);
+}
+
 /* transition diamond at cut points */
 .cc-transition-marker {
   width:16px; height:16px; border-radius:4px;

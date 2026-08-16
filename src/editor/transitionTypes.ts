@@ -111,8 +111,12 @@ export type TransitionDirection = 'left' | 'right' | 'up' | 'down';
 export interface TransitionItem {
   id: string;
   type: TransitionType;
-  /** transition length in frames (half retreats into outgoing, half into incoming) */
+  /** transition length in frames, split across the cut by beforeCutInFrames */
   durationInFrames: number;
+  /** how much of the length sits before the cut, i.e. retreats into the outgoing
+   *  clip; the rest reaches into the incoming one. Absent = centred, which is what
+   *  projects written before this field expects. See editor/transitionSpan.ts. */
+  beforeCutInFrames?: number;
   outgoingItemId: string;
   incomingItemId: string;
   trackId: TrackId;

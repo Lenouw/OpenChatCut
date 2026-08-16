@@ -16,6 +16,7 @@ import { MarkerEditor } from './MarkerEditor';
 import { trackDeletePlan } from './trackDelete';
 import { TrackContextMenu } from './TrackContextMenu';
 import { TransitionContextMenu } from './TransitionContextMenu';
+import { framesBeforeCut } from '../../editor/transitionSpan';
 import { closeCaptionTrackGaps, trackClearPlan } from './trackContextOperations';
 import { isTimelineDragOverChat } from './timelineChatDrop';
 import { HEADER_W, RULER_H } from './timelineUtil';
@@ -334,11 +335,13 @@ The playhead line/triangle is pointerEvents:none, click it to click the ruler - 
           <TransitionContextMenu
             label={t(TRANSITION_LABELS[transition.type] ?? transition.type)}
             durationInFrames={transition.durationInFrames}
+            beforeCutInFrames={framesBeforeCut(transition)}
             fps={state.fps}
             locked={locked}
             x={transitionMenu.x}
             y={transitionMenu.y}
             onSetDuration={(frames) => commands.setTransition(transition.id, { durationInFrames: frames })}
+            onSetBeforeCut={(frames) => commands.setTransition(transition.id, { beforeCutInFrames: frames })}
             onRemove={() => commands.removeTransition(transition.id)}
             onClose={() => setTransitionMenu(null)}
           />

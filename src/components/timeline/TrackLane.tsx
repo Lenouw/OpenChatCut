@@ -14,6 +14,8 @@ import { getKeyframePropertyDefinition } from '../../editor/keyframeRegistry';
 import { rateStretchGeometry } from '../../editor/rateStretch';
 import { sourceWindowForTimelineRange } from '../../editor/sourceLimit';
 import { planSlip } from '../../editor/slip';
+import { transitionStartFrame } from '../../editor/transitionSpan';
+import { TransitionRegion } from './TransitionRegion';
 import type { EditorCommands } from '../../editor/store';
 import { hasLibraryDrag, parseLibraryDrag, type LibraryDragPayload } from '../../library/drag';
 import { ALL_FX, FX_EFFECTS, LUT_EFFECTS } from '../../gl/fx/effects';
@@ -157,7 +159,7 @@ export function TrackLane({
   const visibleTransitions = useMemo(() => transitions.filter((transition) => {
     const incoming = indexes.itemById.get(transition.incomingItemId);
     if (!incoming) return false;
-    const transitionStart = incoming.startFrame - Math.floor(transition.durationInFrames / 2);
+    const transitionStart = transitionStartFrame(transition, incoming.startFrame);
     return previewPinnedItemIds.has(transition.incomingItemId)
       || previewPinnedItemIds.has(transition.outgoingItemId)
       || !!intersectFrameRange(transitionStart, transition.durationInFrames, visibleWindow);
@@ -465,22 +467,31 @@ export function TrackLane({
       {/* transition badges at each cut on this track */}
       {visibleTransitions.map((tn) => {
         const inItem = indexes.itemById.get(tn.incomingItemId);
+        const outItem = indexes.itemById.get(tn.outgoingItemId);
         if (!inItem) return null;
-        const label = t(TRANSITION_LABELS[tn.type as TransitionType] ?? tn.type);
         return (
-          <div key={tn.id} title={`${label} · ${(tn.durationInFrames / state.fps).toFixed(1)}s`}
-            onClick={() => commands.selectItem(tn.incomingItemId)}
-            // The badge is the transition's only handle on the timeline: without this
-            // it could be selected but never edited or removed from where it is drawn.
+          <TransitionRegion
+            key={tn.id}
+            span={tn}
+            // Neither neighbour can lend frames it does not have, or the transition
+            // would run past a clip's edge and read as a freeze frame.
+            maxDurationInFrames={Math.min(
+              outItem?.durationInFrames ?? tn.durationInFrames,
+              inItem.durationInFrames,
+            )}
+            incomingStartFrame={inItem.startFrame}
+            label={t(TRANSITION_LABELS[tn.type as TransitionType] ?? tn.type)}
+            px={px}
+            fps={state.fps}
+            locked={locked}
+            onSelect={() => commands.selectItem(tn.incomingItemId)}
+            onCommit={(span) => commands.setTransition(tn.id, span)}
             onContextMenu={(event) => {
               event.preventDefault();
               event.stopPropagation();
               onTransitionContextMenu({ id: tn.id, x: event.clientX, y: event.clientY });
             }}
-            className="cc-transition-marker"
-            style={{ position: 'absolute', top: '50%', left: inItem.startFrame * px, transform: 'translate(-50%, -50%)', zIndex: 3 }}>
-            <Icon name="swap" size={10} />
-          </div>
+          />
         );
       })}
     </div>
