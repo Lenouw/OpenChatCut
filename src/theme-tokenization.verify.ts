@@ -16,8 +16,6 @@ const CONTENT_COLOR_SELECTORS = new Set([
   '.cc-clip-badge.zoom',
   '.cc-clip-badge.iso',
   '.cc-clip-badge.tr',
-  '.cc-transition-marker',
-  '.cc-transition-marker:hover',
   '.cc-capedit-colordot',
   // The functional status color must maintain the original semantics and not change color following the skin.
   '.cc-media-error',

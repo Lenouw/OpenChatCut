@@ -3,6 +3,7 @@ import type { AgentContext } from '../context';
 import type { DesignStyle, ProjectDoc, Timeline, TimelineItem, TrackId } from '../../editor/types';
 import { activeTimeline, resolveTrackId, timelineTrackIds, trackKind } from '../../editor/types';
 import { migrateProjectDoc } from '../../persist/projectStore';
+import { framesBeforeCut } from '../../editor/transitionSpan';
 import { listTemplates, getTemplate, saveTemplate, type ProjectTemplate } from '../../persist/templateStore';
 import { CURRENT_PROJECT_VERSION } from '../../../shared/project-version';
 
@@ -81,6 +82,17 @@ function remapTransitions(
       ...tr,
       id: uid('tr'),
       durationInFrames,
+      // An explicit split is a proportion of the length, so it has to be rescaled
+      // with it: carried across as a raw frame count it would drift off the balance
+      // the template was authored with, and could outrun a shortened transition.
+      ...(tr.beforeCutInFrames === undefined ? {} : {
+        beforeCutInFrames: framesBeforeCut({
+          durationInFrames,
+          beforeCutInFrames: Math.round(
+            (tr.beforeCutInFrames / tr.durationInFrames) * durationInFrames,
+          ),
+        }),
+      }),
       outgoingItemId: outgoing,
       incomingItemId: incoming,
       trackId: options.track?.(tr.trackId) ?? tr.trackId,

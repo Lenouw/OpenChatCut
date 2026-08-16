@@ -1,4 +1,5 @@
 import { isAudioTransition, type TimelineItem, type TransitionItem } from './types';
+import { framesBeforeCut } from './transitionSpan';
 
 const SEAM_TOLERANCE_FRAMES = 2;
 
@@ -68,9 +69,23 @@ export function reconcileTransitions(
       ? Math.round(transition.durationInFrames)
       : 1;
     const durationInFrames = Math.max(1, Math.min(requested, maxDuration));
-    reconciled.push(durationInFrames === transition.durationInFrames
-      ? transition
-      : { ...transition, durationInFrames });
+    // Trimming a clip reaches transitions through here, never through setTransition,
+    // so this is the only place that can keep an explicit split honest. Left alone,
+    // shortening a neighbour persists beforeCutInFrames > durationInFrames, and a
+    // deliberately centred transition silently reads as pinned to one side.
+    const beforeCutInFrames = transition.beforeCutInFrames === undefined
+      ? undefined
+      : framesBeforeCut({ durationInFrames, beforeCutInFrames: transition.beforeCutInFrames });
+    reconciled.push(
+      durationInFrames === transition.durationInFrames
+        && beforeCutInFrames === transition.beforeCutInFrames
+        ? transition
+        : {
+            ...transition,
+            durationInFrames,
+            ...(beforeCutInFrames === undefined ? {} : { beforeCutInFrames }),
+          },
+    );
   }
   return reconciled;
 }

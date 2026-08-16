@@ -120,6 +120,7 @@ export function useTimelineController({
       : captionTrackEntries(state).some((entry) => entry.captions?.enabled) || textClipCount > 0;
   const {
     captionMenu, setCaptionMenu, trackMenu, setTrackMenu, transitionMenu, setTransitionMenu,
+    selectedTransitionId, setSelectedTransitionId,
     captionError, setCaptionError, duckMenu, setDuckMenu,
     moveCaptionCue, openCaptionTrackMenu, openDuckTrackMenu,
     closeTrackDrillMenu, backFromTrackDrillMenu,
@@ -433,6 +434,7 @@ export function useTimelineController({
     playheadRef, playheadLineRef, toolbarTimecodeRef, rulerTimecodeRef,
     paintPlayhead, playing, editMode, placeMode, setPlaceMode, snapping,
     captionsVisible, captionMenu, setCaptionMenu, trackMenu, setTrackMenu, transitionMenu, setTransitionMenu,
+    selectedTransitionId, setSelectedTransitionId,
     duckMenu, setDuckMenu, captionError, setCaptionError,
     moveCaptionCue, openCaptionTrackMenu, openDuckTrackMenu,
     closeTrackDrillMenu, backFromTrackDrillMenu, recorder, toggleCaptions,

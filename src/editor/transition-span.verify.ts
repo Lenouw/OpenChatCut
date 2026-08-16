@@ -30,8 +30,8 @@ assert.equal(framesBeforeCut({ durationInFrames: 30, beforeCutInFrames: -8 }), 0
 
 // Neither neighbour can lend frames it does not have: past that the transition would
 // run off a clip's edge, which reads on screen as a freeze frame.
-assert.deepEqual(clampTransitionSpan({ durationInFrames: 90 }, 40, 60), { durationInFrames: 40, beforeCutInFrames: 20 });
-assert.deepEqual(clampTransitionSpan({ durationInFrames: 90 }, 60, 40), { durationInFrames: 40, beforeCutInFrames: 20 });
+assert.equal(clampTransitionSpan({ durationInFrames: 90 }, 40, 60).durationInFrames, 40);
+assert.equal(clampTransitionSpan({ durationInFrames: 90 }, 60, 40).durationInFrames, 40);
 assert.equal(clampTransitionSpan({ durationInFrames: 1 }, 60, 60).durationInFrames, MIN_TRANSITION_FRAMES);
 
 // Shortening also brings the split in, so a wide split cannot survive onto a
@@ -39,6 +39,17 @@ assert.equal(clampTransitionSpan({ durationInFrames: 1 }, 60, 60).durationInFram
 assert.deepEqual(
   clampTransitionSpan({ durationInFrames: 90, beforeCutInFrames: 80 }, 30, 30),
   { durationInFrames: 30, beforeCutInFrames: 30 },
+);
+
+// A transition nobody shifted comes back with no split at all. Writing the current
+// midpoint in would pin it as an absolute offset, and the NEXT duration change would
+// then carry that stale number: two clicks in the duration menu would leave a centred
+// transition lopsided. Reproduced through the reducer further down.
+assert.deepEqual(clampTransitionSpan({ durationInFrames: 90 }, 40, 60), { durationInFrames: 40 });
+assert.equal(
+  'beforeCutInFrames' in clampTransitionSpan({ durationInFrames: 30 }, 60, 60),
+  false,
+  'clamping never invents a split the editor did not ask for',
 );
 
 // Dragging the start edge right shortens the transition from the front: its end
@@ -135,5 +146,45 @@ assert.equal(squeezed.transitions![0]!.beforeCutInFrames, 10, 'the split is pull
 const toggled = reduce(shifted, { type: 'setTransition', id: 'tr', patch: { enabled: false } });
 assert.equal(toggled.transitions![0]!.beforeCutInFrames, 6);
 assert.equal(toggled.transitions![0]!.durationInFrames, 30);
+
+// Changing only the duration must never invent a split. Materialising today's
+// midpoint would pin it as an absolute offset that the next duration change then
+// carries: two clicks in the duration menu (0.5s then 2s) used to leave a centred
+// transition sitting 7/53, persisted, without the editor touching a handle.
+const halved = reduce(placed, { type: 'setTransition', id: 'tr', patch: { durationInFrames: 15 } });
+assert.equal(halved.transitions![0]!.beforeCutInFrames, undefined, 'a duration change alone keeps the transition centred');
+const regrown = reduce(halved, { type: 'setTransition', id: 'tr', patch: { durationInFrames: 40 } });
+assert.equal(regrown.transitions![0]!.beforeCutInFrames, undefined);
+assert.equal(
+  framesBeforeCut(regrown.transitions![0]!),
+  20,
+  'still centred after two duration changes, not skewed by a stale offset',
+);
+// An explicit split, on the other hand, survives a duration change: it was asked for.
+assert.equal(
+  reduce(shifted, { type: 'setTransition', id: 'tr', patch: { durationInFrames: 20 } }).transitions![0]!.beforeCutInFrames,
+  6,
+);
+
+// Trimming a neighbouring clip goes through reconcileTransitions, never through
+// setTransition, so it is the only place that can keep an explicit split honest.
+// Left alone it persisted beforeCutInFrames > durationInFrames, and a deliberately
+// centred transition read as pinned hard against one side.
+const trimmed = reduce(
+  reduce(placed, { type: 'setTransition', id: 'tr', patch: { beforeCutInFrames: 15 } }),
+  { type: 'retime', id: 'b', startFrame: 40, durationInFrames: 10 },
+);
+const survivor = trimmed.transitions![0]!;
+assert.equal(survivor.durationInFrames, 10, 'the trim caps the transition');
+assert.ok(
+  (survivor.beforeCutInFrames ?? 0) <= survivor.durationInFrames,
+  'a trim never persists a split wider than the transition it describes',
+);
+
+// The same trim on a never-shifted transition leaves it centred, exactly as it
+// behaved before the split existed.
+const trimmedCentred = reduce(placed, { type: 'retime', id: 'b', startFrame: 40, durationInFrames: 10 });
+assert.equal(trimmedCentred.transitions![0]!.beforeCutInFrames, undefined);
+assert.equal(framesBeforeCut(trimmedCentred.transitions![0]!), 5, 'still centred after the trim');
 
 console.log('transition-span.verify OK');

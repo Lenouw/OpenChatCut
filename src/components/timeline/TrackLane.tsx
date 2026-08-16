@@ -127,6 +127,8 @@ interface TrackLaneProps {
   frameFromClientX: (clientX: number) => number;
   onContextMenu: (menu: { id: string; x: number; y: number }) => void;
   onTransitionContextMenu: (menu: { id: string; x: number; y: number }) => void;
+  selectedTransitionId: string | null;
+  onSelectTransition: (id: string) => void;
   onTrackContextMenu: (menu: { trackId: TrackId; x: number; y: number; frame: number }) => void;
   scrollRef: RefObject<HTMLDivElement | null>;
   onDropExternalFiles?: (files: File[], trackId: TrackId, startFrame: number) => void;
@@ -137,6 +139,7 @@ export function TrackLane({
   visibleWindow, pinnedItemIds, selectionMovePreview, indexes, libDropTarget, setLibDropTarget,
   applyLibraryToClip, applyLibraryToTrack, rippleOnDrop, overwriteOnDrop,
   frameFromClientX, onContextMenu, onTransitionContextMenu, onTrackContextMenu, scrollRef, onDropExternalFiles,
+  selectedTransitionId, onSelectTransition,
 }: TrackLaneProps) {
   const t = useT();
   const { drag, penDrag, setPenDrag, startDrag, startPick, startMarquee } = pointer;
@@ -189,7 +192,7 @@ export function TrackLane({
       }}
       onContextMenu={(e) => {
         const target = e.target instanceof Element ? e.target : null;
-        if (target?.closest('[data-timeline-clip], .cc-transition-marker')) return;
+        if (target?.closest('[data-timeline-clip], .cc-transition-region')) return;
         e.preventDefault();
         e.stopPropagation();
         onTrackContextMenu({ trackId, x: e.clientX, y: e.clientY, frame: frameFromClientX(e.clientX) });
@@ -484,7 +487,8 @@ export function TrackLane({
             px={px}
             fps={state.fps}
             locked={locked}
-            onSelect={() => commands.selectItem(tn.incomingItemId)}
+            selected={selectedTransitionId === tn.id}
+            onSelect={() => onSelectTransition(tn.id)}
             onCommit={(span) => commands.setTransition(tn.id, span)}
             onContextMenu={(event) => {
               event.preventDefault();

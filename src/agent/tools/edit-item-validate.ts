@@ -367,6 +367,10 @@ function validateTransitionUpdate(ctx: AgentContext, entry: Entry): OpResult {
   if (!transition) return { error: `transition not found: ${id}` };
   const patch: Record<string, unknown> = {};
   if (typeof entry.durationInFrames === 'number') patch.durationInFrames = entry.durationInFrames;
+  // How the length is split across the cut. The reducer clamps it into the
+  // transition, so an out-of-range request lands on the nearest end rather than
+  // being refused mid-batch.
+  if (typeof entry.beforeCutInFrames === 'number') patch.beforeCutInFrames = entry.beforeCutInFrames;
   if (typeof entry.assetId === 'string') {
     const type = parseTransitionAssetId(entry.assetId);
     if (!type) return { error: `unknown transition assetId ${entry.assetId}` };

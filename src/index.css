@@ -1129,8 +1129,24 @@ button, input, select { font: inherit; }
 }
 .cc-transition-region-handle:hover { background:rgba(var(--cc-accent-rgb), 0.75); }
 .cc-transition-region.locked .cc-transition-region-handle { cursor:default; }
-.cc-transition-region .cc-transition-marker {
-  position:absolute; top:50%; transform:translate(-50%, -50%); pointer-events:none;
+.cc-transition-region.selected {
+  background:rgba(var(--cc-accent-rgb), 0.32);
+  border-color:var(--cc-accent); box-shadow:0 0 0 1px var(--cc-accent);
+}
+/* the join between the two clips: a hairline, not a second badge competing with
+   the region for the job of saying "a transition is here" */
+.cc-transition-region-cut {
+  position:absolute; top:0; height:100%; width:1px; pointer-events:none;
+  background:rgba(var(--cc-accent-rgb), 0.7);
+}
+.cc-transition-region-body {
+  position:absolute; inset:0; display:flex; align-items:center; gap:4px;
+  padding:0 10px; overflow:hidden; pointer-events:none;
+  color:var(--cc-text);
+}
+.cc-transition-region-label {
+  font-size:10px; line-height:1; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;
 }
 /* length and before/after split, shown only while a drag is in flight. Sits inside
    the region: the timeline lane clips anything above it, so a readout floated over
@@ -1143,15 +1159,6 @@ button, input, select { font: inherit; }
   color:var(--cc-text); background:var(--cc-panel-alt);
   border:0.5px solid var(--cc-border);
 }
-
-/* transition diamond at cut points */
-.cc-transition-marker {
-  width:16px; height:16px; border-radius:4px;
-  background:#3a3f52; border:0.5px solid #8aa0e0; color:#d8e4ff;
-  display:grid; place-items:center; cursor:pointer;
-  box-shadow:0 1px 4px #0008;
-}
-.cc-transition-marker:hover { background:#4a5270; border-color:#b0c4ff; }
 
 .cc-resource-card.draggable { cursor:grab; }
 .cc-resource-card.draggable:active { cursor:grabbing; }

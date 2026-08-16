@@ -40,16 +40,18 @@ export function clampTransitionSpan(
   span: TransitionSpan,
   outgoingDuration: number,
   incomingDuration: number,
-): ResolvedSpan {
+): TransitionSpan {
   const longest = Math.max(MIN_TRANSITION_FRAMES, Math.min(outgoingDuration, incomingDuration));
   const durationInFrames = Math.max(
     MIN_TRANSITION_FRAMES,
     Math.min(span.durationInFrames, longest),
   );
-  return {
-    durationInFrames,
-    beforeCutInFrames: framesBeforeCut({ ...span, durationInFrames }),
-  };
+  // A transition nobody ever shifted keeps no split at all. Writing today's midpoint
+  // in would freeze it as an absolute offset, and the next duration change would
+  // then carry that stale number instead of recentring: two clicks on the duration
+  // menu would leave a centred transition sitting lopsided.
+  if (span.beforeCutInFrames === undefined) return { durationInFrames };
+  return { durationInFrames, beforeCutInFrames: framesBeforeCut({ ...span, durationInFrames }) };
 }
 
 /**
@@ -72,6 +74,9 @@ export function applyTransitionDrag(
     : mode === 'end'
       ? { durationInFrames: span.durationInFrames + deltaFrames, beforeCutInFrames: before }
       : { durationInFrames: span.durationInFrames, beforeCutInFrames: before - deltaFrames };
-  // Both neighbours are held to the same limit, so the clamp takes it twice.
-  return clampTransitionSpan(dragged, maxDurationInFrames, maxDurationInFrames);
+  // Both neighbours are held to the same limit, so the clamp takes it twice. A drag
+  // is the one moment the split becomes explicit: every mode here pins one edge, so
+  // leaving it implicit would let the transition recentre under the hand.
+  const clamped = clampTransitionSpan(dragged, maxDurationInFrames, maxDurationInFrames);
+  return { durationInFrames: clamped.durationInFrames, beforeCutInFrames: framesBeforeCut(clamped) };
 }

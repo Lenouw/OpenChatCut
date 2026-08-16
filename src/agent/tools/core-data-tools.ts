@@ -56,6 +56,8 @@ function readTimeline(ctx: AgentContext): unknown {
       type: transition.type,
       assetId: `builtin:tr-${transition.type}`,
       durationInFrames: transition.durationInFrames,
+      /** Absent means centred on the cut; see editor/transitionSpan.ts. */
+      beforeCutInFrames: transition.beforeCutInFrames,
       outgoingItemId: transition.outgoingItemId,
       incomingItemId: transition.incomingItemId,
       trackId: transition.trackId,

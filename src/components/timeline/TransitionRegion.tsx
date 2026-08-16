@@ -14,6 +14,8 @@ import {
 const MIN_REGION_PX = 24;
 /** Grab width of each edge handle, matching the clip trim handles either side. */
 const HANDLE_PX = 8;
+/** Below this the region has no room for a name next to its icon. */
+const LABEL_MIN_PX = 76;
 
 interface TransitionRegionProps {
   span: TransitionSpan;
@@ -24,21 +26,25 @@ interface TransitionRegionProps {
   px: number;
   fps: number;
   locked: boolean;
+  selected: boolean;
   onSelect: () => void;
   onCommit: (span: ResolvedSpan) => void;
   onContextMenu: (event: React.MouseEvent) => void;
 }
 
 /**
- * The transition drawn as what it is: a stretch of timeline straddling a cut.
+ * The transition, drawn as the one thing it is: a stretch of timeline straddling a
+ * cut, which is also the thing you grab.
  *
- * It used to be a fixed 16px chip pinned to the cut, which gave the length nowhere
- * to show and left no edge to pull, so a placed transition could not be resized or
- * shifted from the timeline at all. Here the width is the length, the chip marks
- * the cut inside it, and the two edges are draggable.
+ * It used to be a 16px chip pinned to the cut. The chip could only be clicked, so
+ * the duration had nowhere to show and neither end could be pulled. Widening the
+ * chip into a region while keeping the chip inside it would leave two competing
+ * marks for one transition, which no editor does: the region carries the icon and
+ * the name itself, and the cut shows as a hairline inside it so an off-centre
+ * transition still says where the join actually falls.
  */
 export function TransitionRegion({
-  span, maxDurationInFrames, incomingStartFrame, label, px, fps, locked,
+  span, maxDurationInFrames, incomingStartFrame, label, px, fps, locked, selected,
   onSelect, onCommit, onContextMenu,
 }: TransitionRegionProps) {
   const [preview, setPreview] = useState<ResolvedSpan | null>(null);
@@ -56,10 +62,19 @@ export function TransitionRegion({
   const left = startFrame * px - (width - trueWidth) / 2;
 
   const beginDrag = (event: React.PointerEvent, mode: TransitionDragMode) => {
-    if (locked) return;
+    // Right and middle buttons must not arm a drag: preventDefault on a right-button
+    // pointerdown suppresses the context menu the user was actually after, and the
+    // matching pointerup would then land as a plain click.
+    if (event.button !== 0) return;
+    if (locked) {
+      onSelect();
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
+    // A synthetic or already-released pointer cannot be captured; the gesture still
+    // tracks correctly from the events themselves, so this must not abort the drag.
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* not capturable */ }
     gesture.current = { mode, startX: event.clientX, base: { ...shown } };
   };
   const moveDrag = (event: React.PointerEvent) => {
@@ -72,7 +87,7 @@ export function TransitionRegion({
     const active = gesture.current;
     if (!active) return;
     gesture.current = null;
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    try { event.currentTarget.releasePointerCapture(event.pointerId); } catch { /* never captured */ }
     const settled = applyTransitionDrag(
       active.base,
       active.mode,
@@ -86,19 +101,30 @@ export function TransitionRegion({
     else onSelect();
   };
 
+  // A cancelled pointer (OS gesture, window blur) is an abandoned drag, not a
+  // finished one: drop the preview rather than writing where the hand happened to be.
+  const cancelDrag = () => {
+    gesture.current = null;
+    setPreview(null);
+  };
   const handleProps = (mode: TransitionDragMode) => ({
     onPointerDown: (event: React.PointerEvent) => beginDrag(event, mode),
     onPointerMove: moveDrag,
     onPointerUp: endDrag,
-    onPointerCancel: endDrag,
+    onPointerCancel: cancelDrag,
+    onLostPointerCapture: cancelDrag,
   });
-  const beforePct = Math.round((beforeCut / durationInFrames) * 100);
+  const beforeRatio = beforeCut / durationInFrames;
+  const beforePct = Math.round(beforeRatio * 100);
 
   return (
     <div
-      className={`cc-transition-region${preview ? ' dragging' : ''}${locked ? ' locked' : ''}`}
+      className={`cc-transition-region${selected ? ' selected' : ''}${preview ? ' dragging' : ''}${locked ? ' locked' : ''}`}
       style={{ left, width }}
       title={`${label} · ${(durationInFrames / fps).toFixed(1)}s`}
+      role="button"
+      aria-label={label}
+      aria-pressed={selected}
       onContextMenu={onContextMenu}
       {...handleProps('slide')}
     >
@@ -107,12 +133,12 @@ export function TransitionRegion({
         style={{ left: 0, width: HANDLE_PX }}
         {...handleProps('start')}
       />
-      <div
-        className="cc-transition-marker"
-        style={{ left: `${(beforeCut / durationInFrames) * 100}%` }}
-        aria-hidden
-      >
+      {/* where the two clips actually join, which stops being the middle as soon as
+          the region is slid across the cut */}
+      <div className="cc-transition-region-cut" style={{ left: `${beforeRatio * 100}%` }} aria-hidden />
+      <div className="cc-transition-region-body" aria-hidden>
         <Icon name="swap" size={10} />
+        {width >= LABEL_MIN_PX && <span className="cc-transition-region-label">{label}</span>}
       </div>
       <div
         className="cc-transition-region-handle"
