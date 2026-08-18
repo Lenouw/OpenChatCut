@@ -376,8 +376,8 @@ export default {
   '正在读取 MCP 连接令牌…': 'Chargement du token de connexion MCP…',
   '无法读取 MCP 连接令牌，请从受信任的编辑器窗口重试。':
     'Impossible de charger le token de connexion MCP. Réessayer depuis une fenêtre d’éditeur approuvée.',
-  'MCP 端点始终要求 Bearer 令牌。令牌只在当前受信任编辑器会话中显示，不写入工程、聊天或浏览器存储；服务重启后自动生成的令牌会变化，需要重新复制配置。OPENCHATCUT_MCP_TOKEN 可覆盖自动令牌。':
-    'L’endpoint MCP exige toujours un token Bearer. Le token n’est affiché que dans la session d’éditeur approuvée en cours et n’est jamais écrit dans le projet, le chat ou le stockage du navigateur. Un token généré automatiquement change après un redémarrage du serveur : recopier alors la configuration. OPENCHATCUT_MCP_TOKEN remplace le token généré.',
+  'MCP 端点始终要求 Bearer 令牌。令牌在首次启动时生成并保存在本机，重启后保持不变，配置一次即可持续使用；OPENCHATCUT_MCP_TOKEN 环境变量可覆盖。令牌只在当前受信任编辑器会话中显示，不写入工程、聊天或浏览器存储。':
+    'L’endpoint MCP exige toujours un token Bearer. Le token est généré au premier lancement et conservé sur cette machine : il ne change plus au redémarrage, une seule configuration suffit ; la variable OPENCHATCUT_MCP_TOKEN le remplace au besoin. Il n’est affiché que dans la session d’éditeur approuvée en cours et n’est jamais écrit dans le projet, le chat ou le stockage du navigateur.',
   '设置 → 连接器 → 添加自定义连接器,粘贴上面的端点地址即可。':
     'Réglages → Connecteurs → Ajouter un connecteur personnalisé, puis coller l’endpoint ci-dessus.',
   '端点默认仅监听本机;对外暴露时请配置 OPENCHATCUT_MCP_TOKEN 鉴权。桌面端 5199 端口被占用时会回退随机端口,以启动日志与本页地址为准。':
