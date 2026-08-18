@@ -213,4 +213,5 @@ export default {
   '下载并启用': 'Download and enable',
   '正在下载画面语义轻量包… {n}%': 'Downloading the visual-semantics pack… {n}%',
   '模型包下载失败，请到 设置 → 本地模型 重试。': 'Model pack download failed — retry in Settings → Local models.',
+  '素材「{name}」已存在。覆盖会同步替换已在时间线中使用的该素材。': 'Media “{name}” already exists. Overwriting also replaces it wherever the timeline uses it.',
 } as Record<string, string>;

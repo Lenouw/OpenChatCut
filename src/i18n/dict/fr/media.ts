@@ -213,4 +213,5 @@ export default {
   '下载并启用': 'Télécharger et activer',
   '正在下载画面语义轻量包… {n}%': 'Téléchargement du pack léger de sémantique visuelle… {n}%',
   '模型包下载失败，请到 设置 → 本地模型 重试。': 'Échec du téléchargement du pack de modèle ; réessayer dans Réglages → Modèles locaux.',
+  '素材「{name}」已存在。覆盖会同步替换已在时间线中使用的该素材。': 'Le média « {name} » existe déjà. L’écraser le remplace aussi partout où la timeline l’utilise.',
 } as Record<string, string>;

@@ -32,4 +32,8 @@ export default {
   '所选片段的源素材已变化，旧的人声分离结果已丢弃。请重试。': 'Source media changed; the previous voice separation result was discarded. Retry.',
   '横向缩放': 'Horizontal Scale',
   '纵向缩放': 'Vertical Scale',
+  '无法将此属性应用到全部选中片段。': 'This property could not be applied to every selected clip.',
+  '已到达编辑词流边界': 'Reached the edge of the edited word stream',
+  '编辑词流区间': 'Edited word-stream range',
+  '源区间': 'Source range',
 } as Record<string, string>;

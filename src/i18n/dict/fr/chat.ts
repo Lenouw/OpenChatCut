@@ -413,4 +413,5 @@ export default {
   'Agent 修改': 'Modification de l’Agent',
   '无变化': 'Aucun changement',
   '处改动': 'modification(s)',
+  '媒体池暂无素材': 'Aucun média dans le bac pour l’instant',
 } as Record<string, string>;

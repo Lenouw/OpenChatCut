@@ -521,4 +521,9 @@ export default {
   '轻量均衡，日常口播可用；timestamped 转写更快。': 'Léger et équilibré, suffisant pour de la voix off courante. La transcription horodatée est plus rapide.',
   '推荐：中英文识别均衡，简体输出，词级时间戳稳定。': 'Recommandé : équilibré en chinois et en anglais, sortie simplifiée, horodatage au mot fiable.',
   '精度最高但体积大、转写较慢；追求效果时选择。': 'Le plus précis, mais volumineux et plus lent. À choisir quand la qualité prime.',
+  '默认 https://ark.ap-southeast.bytepluses.com/api/v3': 'Par défaut https://ark.ap-southeast.bytepluses.com/api/v3',
+  '默认 https://api.wavespeed.ai': 'Par défaut https://api.wavespeed.ai',
+  '默认 https://api.inworld.ai': 'Par défaut https://api.inworld.ai',
+  '默认 https://api.fish.audio': 'Par défaut https://api.fish.audio',
+  '默认 https://api.sws.speechify.com': 'Par défaut https://api.sws.speechify.com',
 } as Record<string, string>;

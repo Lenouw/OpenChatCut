@@ -262,4 +262,5 @@ export default {
   '结束于切点': 'Finir à la coupe',
   '开始于切点': 'Commencer à la coupe',
   '删除转场': 'Supprimer la transition',
+  '锁定轨道': 'Verrouiller la piste',
 } as Record<string, string>;

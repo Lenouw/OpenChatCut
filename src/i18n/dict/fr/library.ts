@@ -194,4 +194,5 @@ export default {
   '视频封面生成': 'Génération de vignette',
   '新闻智能粗剪': 'Prémontage intelligent d’actualité',
   '技能创作器': 'Créateur de compétences',
+  '查看内容': 'Voir le contenu',
 } as Record<string, string>;

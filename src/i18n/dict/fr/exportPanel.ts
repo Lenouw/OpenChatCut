@@ -180,4 +180,5 @@ export default {
   '导出素材未就绪：{n} 个素材仍是未完成的上传占位（可能因磁盘满或断网上传失败），请删除或重新导入这些素材：{list}': 'Médias d’export non prêts : {n} médias sont encore des espaces réservés d’upload inachevé (échec possible pour cause de disque plein ou de coupure réseau). Les supprimer ou les réimporter : {list}',
   '正在恢复导出…': 'Reprise de l’export…',
   '此导出正在由另一个窗口恢复，请稍后重试': 'Cet export est en cours de reprise dans une autre fenêtre. Réessayer dans un instant.',
+  '切换 WebCodecs…': 'Bascule vers WebCodecs…',
 } as Record<string, string>;

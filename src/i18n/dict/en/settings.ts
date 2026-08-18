@@ -522,4 +522,9 @@ export default {
   '轻量均衡，日常口播可用；timestamped 转写更快。': 'Light and balanced, fine for everyday voice-over; timestamped transcription is faster.',
   '推荐：中英文识别均衡，简体输出，词级时间戳稳定。': 'Recommended: balanced on Chinese and English, simplified output, reliable word-level timestamps.',
   '精度最高但体积大、转写较慢；追求效果时选择。': 'The most accurate, but large and slower; choose it when quality matters most.',
+  '默认 https://ark.ap-southeast.bytepluses.com/api/v3': 'Defaults to https://ark.ap-southeast.bytepluses.com/api/v3',
+  '默认 https://api.wavespeed.ai': 'Defaults to https://api.wavespeed.ai',
+  '默认 https://api.inworld.ai': 'Defaults to https://api.inworld.ai',
+  '默认 https://api.fish.audio': 'Defaults to https://api.fish.audio',
+  '默认 https://api.sws.speechify.com': 'Defaults to https://api.sws.speechify.com',
 } as Record<string, string>;

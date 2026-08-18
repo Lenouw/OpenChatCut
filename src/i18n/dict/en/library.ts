@@ -194,4 +194,5 @@ export default {
   '视频封面生成': 'Thumbnail generation',
   '新闻智能粗剪': 'Smart news rough cut',
   '技能创作器': 'Skill builder',
+  '查看内容': 'View contents',
 } as Record<string, string>;

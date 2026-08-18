@@ -264,4 +264,5 @@ export default {
   '结束于切点': 'End at the cut',
   '开始于切点': 'Start at the cut',
   '删除转场': 'Remove transition',
+  '锁定轨道': 'Lock track',
 } as Record<string, string>;

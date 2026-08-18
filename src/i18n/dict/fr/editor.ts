@@ -32,4 +32,8 @@ export default {
   '所选片段的源素材已变化，旧的人声分离结果已丢弃。请重试。': 'Le média source du clip a changé ; l’ancien résultat de séparation de la voix a été écarté. Réessayer.',
   '横向缩放': 'Échelle horizontale',
   '纵向缩放': 'Échelle verticale',
+  '无法将此属性应用到全部选中片段。': 'Impossible d’appliquer cette propriété à tous les plans sélectionnés.',
+  '已到达编辑词流边界': 'Limite du flux de mots monté atteinte',
+  '编辑词流区间': 'Plage du flux de mots monté',
+  '源区间': 'Plage source',
 } as Record<string, string>;
