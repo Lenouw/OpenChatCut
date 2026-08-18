@@ -14,12 +14,26 @@ export type Locale = 'zh' | 'en' | 'fr';
 
 const STORAGE_KEY = 'cc.locale';
 
+/**
+ * Language a fresh install opens in, before anyone touches the switch.
+ *
+ * Baked at build time from VITE_CC_DEFAULT_LOCALE and falling back to 'zh', so
+ * an ordinary build is unchanged. A build distributed to people who do not read
+ * Chinese has to set it: they never see the language switch, because they cannot
+ * read the interface holding it.
+ */
+const BUILD_DEFAULT_LOCALE: Locale = ((): Locale => {
+  const configured = import.meta.env?.VITE_CC_DEFAULT_LOCALE;
+  return configured === 'en' || configured === 'fr' || configured === 'zh' ? configured : 'zh';
+})();
+
 function readInitial(): Locale {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored === 'en' || stored === 'fr' ? stored : 'zh';
+    if (stored === 'en' || stored === 'fr' || stored === 'zh') return stored;
+    return BUILD_DEFAULT_LOCALE;
   } catch {
-    return 'zh';
+    return BUILD_DEFAULT_LOCALE;
   }
 }
 
