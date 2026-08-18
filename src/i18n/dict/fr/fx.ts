@@ -169,4 +169,13 @@ export default {
   '金黄': 'Doré',
   '偏色': 'Dominante',
   '青冷': 'Cyan',
+  '三路色轮': 'Trois roues chromatiques',
+  '高光/阴影': 'Hautes et basses lumières',
+  '清晰度': 'Clarté',
+  'HSL 定向调整': 'Réglage HSL ciblé',
+  '调色台三路色轮：lift 暗部偏移、gamma 中间调、gain 亮部增益，均以 0.5 灰为中性，逐通道作用。': 'Trois roues de l’étalonneur : lift pour les ombres, gamma pour les tons moyens, gain pour les hautes lumières. Neutre à 0,5 de gris, canal par canal.',
+  '输入黑/白场重映射 + 中间调 Gamma + 输出黑/白场（逐通道），配合 inspect_color 的黑白点读数使用。': 'Remappe les points noir et blanc d’entrée, le gamma des tons moyens, puis les points noir et blanc de sortie, canal par canal. À utiliser avec les relevés de inspect_color.',
+  '按亮度软掩膜分别调整：提亮暗部（保护高光）、回收或增强高光。': 'Agit par masque doux de luminance : éclaircit les ombres en préservant les hautes lumières, puis les récupère ou les renforce.',
+  '中间调局部对比（亮度 unsharp）：正值增质感，负值柔化肤质。': 'Contraste local des tons moyens : en positif il ajoute de la matière, en négatif il adoucit la peau.',
+  '二级校色：只对选中的色相区间（中心±宽度+羽化）做色相偏移/饱和度/明度调整；肤色、天空、品牌色定向修。': 'Étalonnage secondaire sur une seule plage de teintes (centre, largeur, adoucissement) : décale la teinte, la saturation et la luminosité. Pour la peau, le ciel ou une couleur de marque.',
 } as Record<string, string>;
