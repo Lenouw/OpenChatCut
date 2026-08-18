@@ -414,5 +414,4 @@ export default {
   'Agent 修改': 'Agent edit',
   '无变化': 'No changes',
   '处改动': 'edit(s)',
-  '媒体池暂无素材': 'No media in the pool yet',
 } as Record<string, string>;
