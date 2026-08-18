@@ -14,10 +14,21 @@ export interface DesktopUpdateSupportContext {
   readonly packaged: boolean;
   readonly smoke: boolean;
   readonly platform: NodeJS.Platform;
+  /**
+   * Whether this macOS build may install updates in place.
+   *
+   * macOS refuses an update whose signature does not match the running app, so
+   * direct updates only work on a Developer ID signed build fed from a channel
+   * publishing archives by the same signer. Ad-hoc signed builds cannot satisfy
+   * that and must keep sending the user to the release page instead, so this
+   * stays off unless a build explicitly opts in.
+   */
+  readonly macDirectUpdates?: boolean;
 }
 
 export function supportsDirectDesktopUpdates(context: DesktopUpdateSupportContext): boolean {
   if (!context.packaged || context.smoke) return false;
+  if (context.platform === 'darwin') return context.macDirectUpdates === true;
   return context.platform === 'win32' || context.platform === 'linux';
 }
 

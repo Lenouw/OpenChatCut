@@ -60,6 +60,40 @@ assert.equal(
   false,
   'ad-hoc signed macOS builds must use the release-page fallback',
 );
+// macOS installs an update only when it is signed by whoever signed the running
+// app, so the in-place path opens for a build that says it meets that. A build
+// that merely forgets to say so keeps the release-page fallback rather than
+// downloading an archive it will refuse to install.
+assert.equal(
+  supportsDirectDesktopUpdates({
+    packaged: true, smoke: false, platform: 'darwin', macDirectUpdates: true,
+  }),
+  true,
+  'a Developer ID signed macOS build fed from its own signer may update in place',
+);
+assert.equal(
+  supportsDirectDesktopUpdates({
+    packaged: true, smoke: false, platform: 'darwin', macDirectUpdates: false,
+  }),
+  false,
+  'opting out explicitly is the same as not opting in',
+);
+// The opt-in never overrides the guards that come before it: an unpackaged or
+// smoke-test build must not reach an update server whatever else it claims.
+assert.equal(
+  supportsDirectDesktopUpdates({
+    packaged: false, smoke: false, platform: 'darwin', macDirectUpdates: true,
+  }),
+  false,
+  'development builds must not contact update servers, opt-in or not',
+);
+assert.equal(
+  supportsDirectDesktopUpdates({
+    packaged: true, smoke: true, platform: 'darwin', macDirectUpdates: true,
+  }),
+  false,
+  'smoke builds must not contact update servers, opt-in or not',
+);
 assert.equal(
   supportsDirectDesktopUpdates({ packaged: false, smoke: false, platform: 'win32' }),
   false,
