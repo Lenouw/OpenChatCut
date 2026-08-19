@@ -16,6 +16,7 @@ import { MarkerEditor } from './MarkerEditor';
 import { trackDeletePlan } from './trackDelete';
 import { TrackContextMenu } from './TrackContextMenu';
 import { TransitionContextMenu } from './TransitionContextMenu';
+import { framesBeforeCut } from '../../editor/transitionSpan';
 import { closeCaptionTrackGaps, trackClearPlan } from './trackContextOperations';
 import { isTimelineDragOverChat } from './timelineChatDrop';
 import { HEADER_W, RULER_H } from './timelineUtil';
@@ -40,6 +41,7 @@ export function Timeline(props: TimelineProps) {
     playheadRef, playheadLineRef, toolbarTimecodeRef, rulerTimecodeRef,
     playing, editMode, placeMode, setPlaceMode, snapping,
     captionsVisible, captionMenu, setCaptionMenu, trackMenu, setTrackMenu, transitionMenu, setTransitionMenu,
+    selectedTransitionId, setSelectedTransitionId,
     duckMenu, setDuckMenu, captionError, setCaptionError,
     moveCaptionCue, openCaptionTrackMenu, openDuckTrackMenu,
     closeTrackDrillMenu, backFromTrackDrillMenu, recorder, toggleCaptions,
@@ -60,11 +62,24 @@ export function Timeline(props: TimelineProps) {
       className="cc-timeline"
       data-cc-shortcut-surface="timeline"
       tabIndex={-1}
+      onKeyDown={(event) => {
+        if (!selectedTransitionId) return;
+        if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+        const transition = (state.transitions ?? []).find((item) => item.id === selectedTransitionId);
+        setSelectedTransitionId(null);
+        if (!transition || state.tracks?.[transition.trackId]?.locked) return;
+        event.preventDefault();
+        event.stopPropagation();
+        commands.removeTransition(transition.id);
+      }}
       onPointerDownCapture={(event) => {
         if (!(event.target as HTMLElement).closest('button, input, select, textarea, [contenteditable="true"]')) {
           event.currentTarget.focus({ preventScroll: true });
         }
         const target = event.target as HTMLElement;
+        // Anything else the pointer lands on takes the selection with it, so a
+        // transition never stays lit while the delete key would hit something else.
+        if (!target.closest('.cc-transition-region')) setSelectedTransitionId(null);
         if (!target.closest(CAPTION_SELECTION_OWNER_SELECTOR)
           && shouldClearCaptionSelectionFromPointer({
             insideTimelineClip: !!target.closest(CAPTION_SELECTION_TIMELINE_CLIP_SELECTOR),
@@ -139,7 +154,7 @@ The playhead line/triangle is pointerEvents:none, click it to click the ruler - 
             const kindLabel = meta.kind === 'video' ? '视频' : meta.kind === 'audio' ? '音乐' : '字幕';
             // Stable title (类型+序号) plus optional custom name as a second row,
             // so track naming never drifts when AI creates tracks with its own labels.
-            const titleName = locale === 'en' ? alias : `${t(kindLabel)}${alias.slice(1)}`;
+            const titleName = locale === 'zh' ? `${t(kindLabel)}${alias.slice(1)}` : alias;
             const customName = config.name || undefined;
             const deletePlan = trackDeletePlan(state, trackId);
             return (
@@ -224,6 +239,15 @@ The playhead line/triangle is pointerEvents:none, click it to click the ruler - 
                   overwriteOnDrop={placeMode === 'overwrite'}
                   onDropExternalFiles={onDropExternalFiles}
                   frameFromClientX={frameFromClientX} onContextMenu={(menu) => { setTrackMenu(null); setTransitionMenu(null); setCtxMenu(menu); }}
+                  selectedTransitionId={selectedTransitionId}
+                  onSelectTransition={(id) => {
+                    // A transition and a clip are never selected at once: the delete
+                    // shortcut reads the item selection, so leaving one behind would
+                    // remove a clip while the transition looked like the target.
+                    commands.selectItem(null);
+                    onMarqueeCaptionSelect([], { additive: false, preserveWithItems: false });
+                    setSelectedTransitionId(id);
+                  }}
                   onTransitionContextMenu={(menu) => {
                     setCtxMenu(null);
                     setCaptionMenu(null);
@@ -334,11 +358,13 @@ The playhead line/triangle is pointerEvents:none, click it to click the ruler - 
           <TransitionContextMenu
             label={t(TRANSITION_LABELS[transition.type] ?? transition.type)}
             durationInFrames={transition.durationInFrames}
+            beforeCutInFrames={framesBeforeCut(transition)}
             fps={state.fps}
             locked={locked}
             x={transitionMenu.x}
             y={transitionMenu.y}
             onSetDuration={(frames) => commands.setTransition(transition.id, { durationInFrames: frames })}
+            onSetBeforeCut={(frames) => commands.setTransition(transition.id, { beforeCutInFrames: frames })}
             onRemove={() => commands.removeTransition(transition.id)}
             onClose={() => setTransitionMenu(null)}
           />

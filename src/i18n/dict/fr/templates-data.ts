@@ -1,0 +1,28 @@
+// Dictionnaire de DONNÉES FR : nom d’affichage français des **données** à clé chinoise (noms de templates maison, etc.). tData() lit ici en français.
+// Sans rapport avec la fragmentation UI (16 fragments assemblés par index.ts) : le nom de donnée n’est pas du texte d’interface, c’est une table à part.
+export default {
+  '竖屏·重点词弹出': 'Vertical · Mot-clé pop',
+  '竖屏·大字幕条': 'Vertical · Grand bandeau',
+  '竖屏·金句卡片': 'Vertical · Carte citation',
+  '竖屏·姓名条': 'Vertical · Synthé nom',
+  '竖屏·关注引导': 'Vertical · Appel à s’abonner',
+  '竖屏·步骤条': 'Vertical · Liste d’étapes',
+  '竖屏·数字大字报': 'Vertical · Grand chiffre',
+  '竖屏·章节进度': 'Vertical · Progression chapitres',
+  '竖屏·价格标签': 'Vertical · Étiquette prix',
+  '竖屏·封面大字': 'Vertical · Titre de couverture',
+  '竖屏·清单勾选': 'Vertical · Check-list',
+  '竖屏·前后对比条': 'Vertical · Avant / Après',
+  '竖屏·便签贴纸': 'Vertical · Post-it',
+  '竖屏·互动提示': 'Vertical · Incitation à interagir',
+  '竖屏·期数角标': 'Vertical · Badge épisode',
+  '口播·米色格纹（横）': 'Face caméra · Papier quadrillé beige (16:9)',
+  '口播·奶咖横线（横）': 'Face caméra · Papier ligné latte (16:9)',
+  '口播·黑板报（横）': 'Face caméra · Tableau noir (16:9)',
+  '口播·侧栏拼贴（横）': 'Face caméra · Collage latéral (16:9)',
+  '口播·便签五五分（竖）': 'Face caméra · Post-it moitié-moitié (9:16)',
+  '口播·点阵五五分（竖）': 'Face caméra · Points moitié-moitié (9:16)',
+  '口播·牛皮纸圆窗（竖）': 'Face caméra · Coin kraft (9:16)',
+  '口播·羊皮纸（横）': 'Face caméra · Parchemin (16:9)',
+  '口播·奶油拍立得（竖）': 'Face caméra · Polaroid crème (9:16)',
+} as Record<string, string>;

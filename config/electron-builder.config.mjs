@@ -59,6 +59,8 @@ const sqliteVecFilters = SQLITE_VEC_PACKAGES
   .filter((packageSuffix) => packageSuffix !== keepSqliteVec)
   .map((packageSuffix) => `!node_modules/sqlite-vec-${packageSuffix}/**`);
 const updateChannel = target.includes('arm64') ? 'latest-arm64' : 'latest-x64';
+/** Base address serving latest-<channel>-mac.yml and the archives it lists. */
+const updateFeedUrl = process.env.CC_UPDATE_FEED_URL?.trim() || undefined;
 const hasMacSigningCertificate = Boolean(process.env.CSC_LINK || process.env.CSC_NAME);
 
 export default {
@@ -71,12 +73,18 @@ export default {
   // The app.asar content itself is handled by the `compression` setting; native binaries
   // (onnxruntime-node, ffmpeg-static, @remotion/compositor) remain unpacked per their filters.
   compression: 'maximum',
-  publish: [{
-    provider: 'github',
-    owner: '0xsline',
-    repo: 'OpenChatCut',
-    channel: updateChannel,
-  }],
+  // A build fed from CC_UPDATE_FEED_URL checks that address instead of the
+  // project's own releases. Without it the app would look for the upstream
+  // build and try to install a binary signed by someone else, which macOS
+  // refuses: a self-signed distribution has to point at its own signer's feed.
+  publish: updateFeedUrl
+    ? [{ provider: 'generic', url: updateFeedUrl, channel: updateChannel }]
+    : [{
+        provider: 'github',
+        owner: '0xsline',
+        repo: 'OpenChatCut',
+        channel: updateChannel,
+      }],
   files: [
     'desktop-dist/main.mjs',
     'desktop-dist/preload.cjs',

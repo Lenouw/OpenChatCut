@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from 'react';
 import type { AgentChangeSession } from '../../agent/changeLog';
 import { useT } from '../../i18n/locale';
+import { translateProposalText } from '../../agent/proposalI18n';
 import { theme, themeAlpha } from '../../theme';
 import { Icon } from '../icons';
 
@@ -59,7 +60,7 @@ export function AgentChangeLogMenu({
                 const disabled = running || !session.rollbackable;
                 return (
                   <div key={session.id} style={row}>
-                    <div style={{ color: theme.text, fontSize: 12.5, lineHeight: 1.45 }}>{session.summary}</div>
+                    <div style={{ color: theme.text, fontSize: 12.5, lineHeight: 1.45 }}>{translateProposalText(session.summary)}</div>
                     <div style={{ color: theme.textDim, fontSize: 11, marginTop: 3 }}>
                       {new Date(session.createdAt).toLocaleString()} · {session.operations.length} {t('项操作')}
                     </div>

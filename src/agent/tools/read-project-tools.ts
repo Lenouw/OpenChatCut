@@ -188,6 +188,10 @@ export async function execReadProjectTool(
         type: t.type,
         assetId: `builtin:tr-${t.type}`,
         durationInFrames: t.durationInFrames,
+        // Absent means centred on the cut. Without it the agent reads a timeline
+        // that renders differently from what it was handed, and cannot reproduce
+        // or correct a balance the editor set by dragging.
+        beforeCutInFrames: t.beforeCutInFrames,
         outgoingItemId: t.outgoingItemId,
         incomingItemId: t.incomingItemId,
         trackId: t.trackId,

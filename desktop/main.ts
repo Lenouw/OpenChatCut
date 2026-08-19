@@ -24,6 +24,17 @@ import { installProjectStoreIpc } from './project-store-ipc.ts';
 import { installEditorAuthIpc } from './editor-auth-ipc.ts';
 import { installDesktopUpdateIpc } from './update-ipc.ts';
 import { supportsDirectDesktopUpdates } from './update-service.ts';
+
+/**
+ * Baked in at bundle time (see the desktop:build:main script). Only a build that
+ * is Developer ID signed AND published to a feed under the same signer may turn
+ * this on: macOS rejects an update signed by anyone else, so a wrong value here
+ * shows up as an update that downloads and then refuses to install.
+ */
+declare const __CC_MAC_DIRECT_UPDATES__: boolean | undefined;
+const MAC_DIRECT_UPDATES = typeof __CC_MAC_DIRECT_UPDATES__ === 'undefined'
+  ? false
+  : __CC_MAC_DIRECT_UPDATES__ === true;
 import { installDesktopInferenceIpc } from './native-inference-ipc.ts';
 import { installDirectoryWatchIpc } from './directory-watch-ipc.ts';
 import { importAgentPaths } from './agent-path-import.ts';
@@ -309,6 +320,7 @@ async function boot(): Promise<void> {
       packaged: app.isPackaged,
       smoke: SMOKE,
       platform: process.platform,
+      macDirectUpdates: MAC_DIRECT_UPDATES,
     }),
   });
   installDirectoryWatchIpc(origin);

@@ -37,7 +37,7 @@ export function assembleSystemPrompt(stable: readonly string[], volatilePart: st
 }
 
 export function agentLanguagePrompt(locale: Locale): string {
-  const language = locale === 'zh' ? 'Chinese' : 'English';
+  const language = locale === 'zh' ? 'Chinese' : locale === 'fr' ? 'French' : 'English';
   return `\n\n# Response Language\nThe interface language is ${language}. Write all user-facing responses, questions, summaries, and generated editing instructions in ${language}.`;
 }
 

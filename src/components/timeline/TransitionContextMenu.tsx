@@ -10,14 +10,24 @@ import {
 interface TransitionContextMenuProps {
   label: string;
   durationInFrames: number;
+  beforeCutInFrames: number;
   fps: number;
   locked: boolean;
   x: number;
   y: number;
   onSetDuration: (frames: number) => void;
+  onSetBeforeCut: (frames: number) => void;
   onRemove: () => void;
   onClose: () => void;
 }
+
+/** Where a transition sits relative to the cut. Dragging the region gives any
+ *  split in between; these are the three an editor reaches for by name. */
+const ALIGNMENTS = [
+  { key: 'centre', icon: 'diamond', label: '居中于切点', beforeCut: (d: number) => Math.floor(d / 2) },
+  { key: 'before', icon: 'prev', label: '结束于切点', beforeCut: (d: number) => d },
+  { key: 'after', icon: 'next', label: '开始于切点', beforeCut: () => 0 },
+] as const satisfies readonly { key: string; icon: IconName; label: string; beforeCut: (d: number) => number }[];
 
 function MenuItem({ label, icon, checked, disabled, danger, onClick }: {
   label: string;
@@ -49,7 +59,8 @@ const Separator = () => <div className="cc-caption-cue-menu-separator" role="sep
  *  clip's applied-effects list, and its duration could not be changed at all
  *  even though the model carries one. */
 export function TransitionContextMenu({
-  label, durationInFrames, fps, locked, x, y, onSetDuration, onRemove, onClose,
+  label, durationInFrames, beforeCutInFrames, fps, locked, x, y,
+  onSetDuration, onSetBeforeCut, onRemove, onClose,
 }: TransitionContextMenuProps) {
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
@@ -98,6 +109,17 @@ export function TransitionContextMenu({
           checked={active === seconds}
           disabled={locked}
           onClick={run(() => onSetDuration(transitionPresetFrames(seconds, fps)))}
+        />
+      ))}
+      <Separator />
+      {ALIGNMENTS.map((alignment) => (
+        <MenuItem
+          key={alignment.key}
+          label={t(alignment.label)}
+          icon={alignment.icon}
+          checked={beforeCutInFrames === alignment.beforeCut(durationInFrames)}
+          disabled={locked}
+          onClick={run(() => onSetBeforeCut(alignment.beforeCut(durationInFrames)))}
         />
       ))}
       <Separator />

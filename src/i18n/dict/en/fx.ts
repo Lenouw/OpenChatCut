@@ -169,4 +169,13 @@ export default {
   '金黄': 'Golden',
   '偏色': 'Color Cast',
   '青冷': 'Cyan',
+  '三路色轮': 'Three-way colour wheels',
+  '高光/阴影': 'Highlights & shadows',
+  '清晰度': 'Clarity',
+  'HSL 定向调整': 'HSL targeted adjustment',
+  '调色台三路色轮：lift 暗部偏移、gamma 中间调、gain 亮部增益，均以 0.5 灰为中性，逐通道作用。': 'Grading-desk three-way wheels: lift for the shadows, gamma for the mid-tones, gain for the highlights, neutral at 0.5 grey, channel by channel.',
+  '输入黑/白场重映射 + 中间调 Gamma + 输出黑/白场（逐通道），配合 inspect_color 的黑白点读数使用。': 'Remaps the input black and white points, the mid-tone gamma, then the output black and white points, channel by channel. Use it with the black and white readings from inspect_color.',
+  '按亮度软掩膜分别调整：提亮暗部（保护高光）、回收或增强高光。': 'Works through a soft luminance mask: lifts the shadows while protecting the highlights, then recovers or strengthens them.',
+  '中间调局部对比（亮度 unsharp）：正值增质感，负值柔化肤质。': 'Local mid-tone contrast (luminance unsharp): positive adds texture, negative softens skin.',
+  '二级校色：只对选中的色相区间（中心±宽度+羽化）做色相偏移/饱和度/明度调整；肤色、天空、品牌色定向修。': 'Secondary grade on one hue range only (centre, width and feather): shifts hue, saturation and lightness. For skin, sky or brand colours.',
 } as Record<string, string>;

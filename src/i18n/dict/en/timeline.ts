@@ -261,4 +261,8 @@ export default {
   '转场菜单': 'Transition menu',
   '{n} 秒': '{n}s',
   '删除转场': 'Remove transition',
+  '居中于切点': 'Centre on the cut',
+  '结束于切点': 'End at the cut',
+  '开始于切点': 'Start at the cut',
+  '锁定轨道': 'Lock track',
 } as Record<string, string>;

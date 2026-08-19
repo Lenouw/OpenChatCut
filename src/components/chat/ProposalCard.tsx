@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Proposal } from '../../agent/proposal';
 import { useT } from '../../i18n/locale';
+import { translateProposalText } from '../../agent/proposalI18n';
 import { Icon } from '../icons';
 
 export function ProposalCard({ proposal, onApply, onReject, onPreview, stale, onForceApply, onRePropose }: {
@@ -47,16 +48,16 @@ export function ProposalCard({ proposal, onApply, onReject, onPreview, stale, on
           </span>
           <div className="cc-proposal-titles">
             <div className="cc-proposal-title-row">
-              <h3 className="cc-proposal-title">{proposal.title || t('编辑提案')}</h3>
+              <h3 className="cc-proposal-title">{proposal.title ? t(proposal.title) : t('编辑提案')}</h3>
               <span className="cc-proposal-badge">{t('待确认')}</span>
             </div>
             {proposal.summary ? (
-              <p className="cc-proposal-summary">{proposal.summary}</p>
+              <p className="cc-proposal-summary">{translateProposalText(proposal.summary)}</p>
             ) : null}
           </div>
         </div>
         {proposal.totalImpact ? (
-          <span className="cc-proposal-impact" title={t('影响范围')}>{proposal.totalImpact}</span>
+          <span className="cc-proposal-impact" title={t('影响范围')}>{translateProposalText(proposal.totalImpact)}</span>
         ) : null}
       </header>
 
@@ -86,13 +87,13 @@ export function ProposalCard({ proposal, onApply, onReject, onPreview, stale, on
                 <span className="cc-proposal-op-body">
                   <span className="cc-proposal-op-main">
                     <span className="cc-proposal-op-action">
-                      {op.action}{(op.callCount ?? 1) > 1 ? ` ×${op.callCount}` : ''}
+                      {t(op.action)}{(op.callCount ?? 1) > 1 ? ` ×${op.callCount}` : ''}
                     </span>
-                    <span className="cc-proposal-op-target" title={op.target}>{op.target}</span>
+                    <span className="cc-proposal-op-target" title={t(op.target)}>{t(op.target)}</span>
                   </span>
                   <span className="cc-proposal-op-meta">
                     <span className="cc-proposal-tool">{op.tool}</span>
-                    {op.impact ? <span className="cc-proposal-op-impact">{op.impact}</span> : null}
+                    {op.impact ? <span className="cc-proposal-op-impact">{translateProposalText(op.impact)}</span> : null}
                   </span>
                 </span>
               </label>

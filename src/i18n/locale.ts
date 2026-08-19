@@ -6,17 +6,34 @@
 import { useSyncExternalStore } from 'react';
 import { EN } from './dict/en';
 import EN_DATA from './dict/en/templates-data';
+import { FR } from './dict/fr';
+import FR_DATA from './dict/fr/templates-data';
 import { ZH_DATA } from './dict/zh';
 
-export type Locale = 'zh' | 'en';
+export type Locale = 'zh' | 'en' | 'fr';
 
 const STORAGE_KEY = 'cc.locale';
 
+/**
+ * Language a fresh install opens in, before anyone touches the switch.
+ *
+ * Baked at build time from VITE_CC_DEFAULT_LOCALE and falling back to 'zh', so
+ * an ordinary build is unchanged. A build distributed to people who do not read
+ * Chinese has to set it: they never see the language switch, because they cannot
+ * read the interface holding it.
+ */
+const BUILD_DEFAULT_LOCALE: Locale = ((): Locale => {
+  const configured = import.meta.env?.VITE_CC_DEFAULT_LOCALE;
+  return configured === 'en' || configured === 'fr' || configured === 'zh' ? configured : 'zh';
+})();
+
 function readInitial(): Locale {
   try {
-    return localStorage.getItem(STORAGE_KEY) === 'en' ? 'en' : 'zh';
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'en' || stored === 'fr' || stored === 'zh') return stored;
+    return BUILD_DEFAULT_LOCALE;
   } catch {
-    return 'zh';
+    return BUILD_DEFAULT_LOCALE;
   }
 }
 
@@ -33,13 +50,17 @@ export function setLocale(next: Locale): void {
   try {
     localStorage.setItem(STORAGE_KEY, next);
   } catch { /* If the private mode cannot be saved, it will only affect this session */ }
-  document.documentElement.lang = next === 'en' ? 'en' : 'zh-CN';
+  document.documentElement.lang = next === 'zh' ? 'zh-CN' : next;
   subscribers.forEach((notify) => notify());
 }
 
 /** t('Selected {n}', { n: 3 }) - The Chinese original text is the key; the placeholder {name} has the same name in both languages. */
 export function t(zh: string, params?: Record<string, string | number>): string {
-  const raw = current === 'en' ? (EN[zh] ?? zh) : zh;
+  const raw = current === 'en'
+    ? (EN[zh] ?? zh)
+    : current === 'fr'
+      ? (FR[zh] ?? EN[zh] ?? zh)
+      : zh;
   if (!params) return raw;
   return raw.replace(/\{(\w+)\}/g, (match, key: string) => (key in params ? String(params[key]) : match));
 }
@@ -48,7 +69,9 @@ export function t(zh: string, params?: Record<string, string | number>): string 
  * English key data (211 built-in items) zh state walking ZH_DATA; Chinese key data (self-made package) en state walking EN_DATA.
  * It is only used for display and does not change the data itself (the name is also a reference key). */
 export function tData(text: string): string {
-  return current === 'zh' ? (ZH_DATA[text] ?? text) : (EN_DATA[text] ?? text);
+  if (current === 'zh') return ZH_DATA[text] ?? text;
+  if (current === 'fr') return FR_DATA[text] ?? EN_DATA[text] ?? text;
+  return EN_DATA[text] ?? text;
 }
 
 /** Get t in the component: subscribe to language switching, trigger rerendering of this component when switching. */

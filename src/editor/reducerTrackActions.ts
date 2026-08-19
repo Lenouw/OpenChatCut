@@ -1,6 +1,7 @@
 import type { TimelineItem, TimelineState, TrackFlags, TransitionItem } from './types';
 import { captionTrackEntries, captionsOnTrack, DEFAULT_WATERMARK, defaultTrackId, isAudioTransition, timelineTrackIds, trackEnd, trackKind } from './types';
 import { reconcileTimelineCaptionReferences } from '../captions/reconcileSources.js';
+import { clampTransitionSpan, MIN_TRANSITION_FRAMES } from './transitionSpan';
 import type { Action } from './reducerActions';
 import { placeTrack, withTrackCaptions } from './reducerTimelineHelpers';
 
@@ -30,9 +31,9 @@ export function applyTrackAction(
       if (!prior.length) return s;
       const out = prior.reduce((best, x) => (x.startFrame + x.durationInFrames > best.startFrame + best.durationInFrames ? x : best));
       if (inItem.startFrame - (out.startFrame + out.durationInFrames) > 2) return s; // must be adjacent
-      const maxL = Math.max(2, Math.min(out.durationInFrames, inItem.durationInFrames));
+      const maxL = Math.max(MIN_TRANSITION_FRAMES, Math.min(out.durationInFrames, inItem.durationInFrames));
       const defaultL = audioTr ? Math.min(15, maxL) : Math.min(30, maxL);
-      const L = Math.max(2, Math.min(a.durationInFrames ?? defaultL, maxL));
+      const L = Math.max(MIN_TRANSITION_FRAMES, Math.min(a.durationInFrames ?? defaultL, maxL));
       const t: TransitionItem = {
         id: a.id, type: a.transType, durationInFrames: L, outgoingItemId: out.id, incomingItemId: inItem.id, trackId: inItem.track, enabled: true,
         // custom-shader: carry the generated GLSL onto the item so it persists + renders after reload
@@ -53,12 +54,18 @@ export function applyTrackAction(
         transitions: (s.transitions ?? []).map((t) => {
           if (t.id !== a.id) return t;
           const merged = { ...t, ...a.patch };
-          if (a.patch.durationInFrames !== undefined) {
+          if (a.patch.durationInFrames !== undefined || a.patch.beforeCutInFrames !== undefined) {
             // Cannot exceed either clip's length; this avoids freeze frames and overlap.
             const out = s.items.find((x) => x.id === t.outgoingItemId);
             const inc = s.items.find((x) => x.id === t.incomingItemId);
-            const maxL = Math.max(2, Math.min(out?.durationInFrames ?? 2, inc?.durationInFrames ?? 2));
-            merged.durationInFrames = Math.max(2, Math.min(merged.durationInFrames, maxL));
+            return {
+              ...merged,
+              ...clampTransitionSpan(
+                merged,
+                out?.durationInFrames ?? MIN_TRANSITION_FRAMES,
+                inc?.durationInFrames ?? MIN_TRANSITION_FRAMES,
+              ),
+            };
           }
           return merged;
         }),

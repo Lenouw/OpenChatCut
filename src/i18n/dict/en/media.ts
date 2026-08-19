@@ -227,4 +227,5 @@ export default {
   '上一条': 'Previous',
   '下一条': 'Next',
   '暂无文字稿': 'No transcript yet',
+  '素材「{name}」已存在。覆盖会同步替换已在时间线中使用的该素材。': 'Media “{name}” already exists. Overwriting also replaces it wherever the timeline uses it.',
 } as Record<string, string>;

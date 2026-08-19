@@ -1,11 +1,9 @@
-/** Duration presets offered on the transition badge menu, in seconds. Short
- *  enough to keep the menu scannable; finer values come from the agent tools. */
-export const TRANSITION_DURATION_PRESETS = [0.2, 0.3, 0.5, 1, 2] as const;
+import { MIN_TRANSITION_FRAMES } from '../../editor/transitionSpan';
 
-/** Shortest transition the store will hold: setTransition clamps to 2 frames
- *  (see reducerTrackActions), so proposing less would be stored as something
- *  else and make the menu tick the wrong entry. */
-const MIN_TRANSITION_FRAMES = 2;
+/** Duration presets offered on the transition badge menu, in seconds. Short
+ *  enough to keep the menu scannable; finer values come from dragging the
+ *  region's edges, or from the agent tools. */
+export const TRANSITION_DURATION_PRESETS = [0.2, 0.3, 0.5, 1, 2] as const;
 
 /** Frames for a preset at the timeline's rate, clamped to the store's own
  *  minimum so what the menu offers is exactly what gets persisted. */
